@@ -15,11 +15,10 @@ import androidx.lifecycle.Observer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import java.io.File
 
 import java.util.*
 
@@ -35,11 +34,14 @@ private const val DATE_FORMAT = "EEE, MMM, dd"
 
 class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var crime: Crime
+    private lateinit var photoFile: File
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var reportButton: Button
     private lateinit var suspectButton: Button
     private lateinit var solvedCheckBox: CheckBox
+    private lateinit var photoButton: ImageButton
+    private lateinit var photoView: ImageView
 
     private val crimeDetailListViewModel: CrimeDetailViewModel by lazy {
         ViewModelProvider(this).get(CrimeDetailViewModel::class.java)
@@ -66,7 +68,8 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         dateButton = view.findViewById(R.id.crime_data) as Button
         reportButton = view.findViewById(R.id.crime_report) as Button
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
-
+        photoView = view.findViewById(R.id.crime_photo) as ImageView
+        photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
         return view
     }
@@ -81,6 +84,7 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             Observer { crime ->
                 crime?.let {
                     this.crime = crime
+                    photoFile = crimeDetailListViewModel.getPhotoFile(crime)
                     updateUI()
                 }
             })
@@ -157,22 +161,17 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
             }
         }
-
-
-
     }
 
     override fun onStop() {
         super.onStop()
         crimeDetailListViewModel.saveCrime(crime)
-
     }
 
     override fun onDateSelected(date: Date) {
         crime.date = date
         updateUI()
     }
-
 
     private fun updateUI() {
         titleField.setText(crime.title)
@@ -216,7 +215,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
         }
     }
 
-
     private fun getCrimeReport(): String {
         val solvedString = if (crime.isSolved) {
             getString(R.string.crime_report_solved)
@@ -231,7 +229,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             getString(R.string.crime_report_suspect, crime.suspect)
         }
         return getString(R.string.crime_report, crime.title, dateString, solvedString, suspect)
-
     }
 
     companion object {  // Включите в CrimeFragment функцию newInstance(UUID), который получает UUID, создает пакет аргументов, создает экземпляр фрагмента, а затем присоединяет аргументы к фрагменту
@@ -244,6 +241,5 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
             }
         }
     }
-
 
 }

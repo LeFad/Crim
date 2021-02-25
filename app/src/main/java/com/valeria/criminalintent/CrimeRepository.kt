@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.valeria.criminalintent.database.CrimeDatabase
 import com.valeria.criminalintent.database.migration_1_2
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
@@ -24,6 +25,7 @@ class CrimeRepository private constructor(context: Context){
 
     private val crimeDao = database.crimeDao()
     private val executor = Executors.newSingleThreadExecutor() // вставка и обновлн с пом исполнителя; добавл св-во исп для хран ссылки, выполн функции встаки и обновл с пом исполнителя
+    private val filesDir = context.applicationContext.filesDir
 
     fun getCrimes(): LiveData<List<Crime>> = crimeDao.getCrimes()
     fun getCrime(id:UUID): LiveData<Crime?> = crimeDao.getCrime(id)
@@ -45,6 +47,8 @@ class CrimeRepository private constructor(context: Context){
             crimeDao.deleteCrime(crime)
         }
     }
+
+    fun getPhotoFile(crime: Crime): File = File(filesDir,crime.photoFileName)
 
  //1//
     companion object{
