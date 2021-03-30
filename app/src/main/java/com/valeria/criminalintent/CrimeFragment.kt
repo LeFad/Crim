@@ -91,7 +91,8 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                 crime?.let {
                     this.crime = crime
                     photoFile = crimeDetailListViewModel.getPhotoFile(crime)
-                    photoUri = FileProvider.getUriForFile(requireActivity(),"com.valeria.criminalintent.fileprovider",photoFile)
+                    photoUri = FileProvider.getUriForFile(requireActivity(),
+                        "com.valeria.criminalintent.fileprovider",photoFile)
                     updateUI()
                 }
             })
@@ -183,16 +184,19 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
                 captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
 
                 val cameraActivities: List<ResolveInfo> =
-                    packageManager.queryIntentActivities(captureImage,PackageManager.MATCH_DEFAULT_ONLY)
+                    packageManager.queryIntentActivities(captureImage,
+                        PackageManager.MATCH_DEFAULT_ONLY)
 
                 for (cameraActivity in cameraActivities){
                     requireActivity().grantUriPermission(
-                        cameraActivity.activityInfo.packageName,photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        cameraActivity.activityInfo.packageName,photoUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
                 }
                 startActivityForResult(captureImage, REQUEST_PHOTO)
             }
         }
+
 
         photoView.setOnClickListener{
             if(photoFile.exists()){
@@ -225,7 +229,6 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
     private fun updateUI() {
         titleField.setText(crime.title)
         dateButton.text = crime.date.toString()
-        // solvedCheckBox.isChecked = crime.isSolved
         solvedCheckBox.apply {
             isChecked = crime.isSolved
             jumpDrawablesToCurrentState()
@@ -240,11 +243,10 @@ class CrimeFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private fun updatePhotoView(){
         if (photoFile.exists()){
-            photoView.visibility = View.VISIBLE
             val bitmap = getScaledBitmap(photoFile.path, requireActivity())
             photoView.setImageBitmap(bitmap)
         } else {
-            photoView.visibility = View.GONE
+            photoView.setImageDrawable(null)
         }
     }
 
